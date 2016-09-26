@@ -37,7 +37,7 @@ void draw(){
     text(i,towns[i][0],towns[i][1]+10);
   }
   for(int i=0;i<plength-1;i++){
-    line(path[i][1],path[i][1],path[i+1][0],path[i+1][1]);
+    line(path[i][0],path[i][1],path[i+1][0],path[i+1][1]);
   }
   text("total distance: "+tdist,10,10);
   text("towns mapped: "+plength,10,30);
