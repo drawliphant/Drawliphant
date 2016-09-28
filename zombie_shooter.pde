@@ -1,5 +1,5 @@
 boolean hit(float x, float y, float x1, float y1, float x2, float y2) {
-
+//tests if the bullet line intersects with zombie
   float A = x - x1;
   float B = y - y1;
   float C = x2 - x1;
@@ -65,7 +65,7 @@ void bullet(float x, float y, int mouseX, int mouseY, ArrayList<float[]>zombies)
   float x2=x+range*cos(angle);//end point of bullet, where it lands
   float y2=y+range*sin(angle);
   
-  line(x, y, x2, y2);//draw the bullet
+  line(x+cos(angle)*30, y+sin(angle)*30, x2, y2);//draw the bullet
 
 
   for (int i=0; i<zombies.size(); i++) {//run through each zombie and test if hit etc
@@ -110,16 +110,18 @@ int playerHealth=100;//start health of player
 int playerSpeed=2;//player speed multiplier
 int lives=3;//player lives
 int points=0;
-
+int highScore=0;
 ArrayList<float[]> zombies=new ArrayList<float[]>();//holds the zombies, array holds x,y,health
 float[] xyh=new float[3];//used to take and add arrays to zombie arraylist
 
 float zombieAngle;//used to make zombie walk toward player
-
+float gunAngle;
 
 
 void setup() {
   size(400, 400);//screen size, should be scalable with height and width gloabals
+  zombie();
+  strokeWeight(3);
 }
 
 void draw() {
@@ -132,12 +134,17 @@ void draw() {
 
   fill(500-playerHealth*4, 0, playerHealth*4);//player health shown by blue to red
   ellipse(playerX, playerY, 25, 25);//draw player
-  
+  gunAngle=atan2(mouseY-playerY,mouseX-playerX);
+  strokeWeight(6);
+  line(playerX+cos(gunAngle)*15,playerY+sin(gunAngle)*15,playerX+cos(gunAngle)*30,playerY+sin(gunAngle)*30);
+  strokeWeight(3);
   fill(0, 0, 255);//lives draw blue
   for (int i=0; i<lives; i++) {
     ellipse(i*15+15, 25, 10, 10);//draw lives circles
   }
   text("points: "+points,40,10);
+  text("High Score: "+highScore,40,30);
+  
   for (int i=0; i<zombies.size();i++){//run for every zombie
     float[] xyh=zombies.get(i);//acces the array list at i
     zombieAngle=atan2(playerY-xyh[1],playerX-xyh[0]);//find the angle between guy and zombie
@@ -156,9 +163,17 @@ void draw() {
     playerY=height/2;//put the player in the center of the screen
     background(255, 0, 0);
   }
-  if (lives<0) {//game over code
+  if(lives<0) {//game over code
     text("GAME OVER", 200, 200);
+    delay(1000);
+    if (points>highScore){
+      highScore=points;
+    }
     points=0;
-    
+    int zombienum=zombies.size();
+    for(int i=zombienum-1; i>0;i--){
+      zombies.remove(i);
+    }
+    lives=3;
   }
 }
