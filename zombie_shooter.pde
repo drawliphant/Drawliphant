@@ -72,7 +72,14 @@ void bullet(float x, float y, int mouseX, int mouseY, ArrayList<float[]>zombies)
     xyh=zombies.get(i);//put array list at i in the array
     if(hit(xyh[0],xyh[1],x,y,x2,y2)){//text if the zombie was hit by the bullet
       xyh[2]-=50;//zombie takes damage
-      if(xyh[2]<=0){zombies.remove(i);}//if zombie is out of health it dies
+      if(xyh[2]<=0){
+        zombies.remove(i);
+        points++;
+        zombie();
+        if(points%5==0){
+          zombie();
+        }
+      }//if zombie is out of health it dies
     }
   }
 };
@@ -86,7 +93,7 @@ void keyPressed() {//sets bool to true if the key is pressed
   if (key=='s') keys[2]=true;
   if (key=='d') keys[3]=true;
   if(key==' '){//spawn a zombie at a random wall when you press space
-    zombie(200,200,100);
+    zombie();
   }
 }
 void keyReleased() {//if a key is released then set its bool to false
@@ -102,6 +109,7 @@ boolean[] keys=new boolean[4];//used to hold key inputs
 int playerHealth=100;//start health of player
 int playerSpeed=2;//player speed multiplier
 int lives=3;//player lives
+int points=0;
 
 ArrayList<float[]> zombies=new ArrayList<float[]>();//holds the zombies, array holds x,y,health
 float[] xyh=new float[3];//used to take and add arrays to zombie arraylist
@@ -129,7 +137,7 @@ void draw() {
   for (int i=0; i<lives; i++) {
     ellipse(i*15+15, 25, 10, 10);//draw lives circles
   }
-  
+  text("points: "+points,40,10);
   for (int i=0; i<zombies.size();i++){//run for every zombie
     float[] xyh=zombies.get(i);//acces the array list at i
     zombieAngle=atan2(playerY-xyh[1],playerX-xyh[0]);//find the angle between guy and zombie
@@ -150,5 +158,7 @@ void draw() {
   }
   if (lives<0) {//game over code
     text("GAME OVER", 200, 200);
+    points=0;
+    
   }
 }
