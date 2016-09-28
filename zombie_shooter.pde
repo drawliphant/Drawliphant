@@ -28,12 +28,35 @@ boolean hit(float x, float y, float x1, float y1, float x2, float y2) {
   return ret;
 }
 void zombie(){
+  float[] xyh=new float[3];{
+    xyh[2]=100;
+  }
   boolean one=random(1)<.5;
   boolean two=random(1)<.5;
-  if(one&&two)zombie
+  if(one&&two){
+    xyh[0]=random(0,400);
+    xyh[1]=0;
+  }
+  if(!one&&two){
+    xyh[0]=random(0,width);
+    xyh[1]=height;
+  }
+  if(!one&&!two){
+    xyh[0]=width;
+    xyh[1]=random(0,height);
+  }
+  if(one&&!two){
+    xyh[0]=0;
+    xyh[1]=random(0,height);
+  }
+  zombies.add(xyh);
 }
 void zombie(float x, float y, int health){
-  
+  float[] xyh=new float[3];
+  xyh[0]=x;
+  xyh[1]=y;
+  xyh[2]=health;
+  zombies.add(xyh);
 }
 
 void bullet(float x, float y, int mouseX, int mouseY, float[][]zombies) {
@@ -60,9 +83,7 @@ void keyPressed() {
   if (key=='s') keys[2]=true;
   if (key=='d') keys[3]=true;
   if(key==' '){
-    zombies[0][0]=300;
-    zombies[0][1]=300;
-    zombies[0][2]=100;
+    zombie();
   }
 }
 void keyReleased() {
@@ -78,7 +99,9 @@ boolean[] keys=new boolean[4];
 int playerHealth=100;
 int playerSpeed=2;
 int lives=3;
-float[][] zombies=new float[1][3];//ArrayList<String[]> outerArr = new ArrayList<String[]>(); 
+
+ArrayList<float[]> zombies=new ArrayList<float[]>();
+//ArrayList<String[]> outerArr = new ArrayList<String[]>(); 
 float zombieAngle;
 
 
@@ -103,13 +126,14 @@ void draw() {
     ellipse(i*15+15, 25, 10, 10);
   }
   
-  for (int i=0; i<zombies.length;i++){
-    zombieAngle=atan2(playerY-zombies[i][1],playerX-zombies[i][0]);
+  for (int i=0; i<zombies.size();i++){
+    zombies.get(i[0]);
+    zombieAngle=atan2(playerY-zombies.get[i][1],playerX-zombies[i][0]);
     fill(500-zombies[i][2]*4,zombies[i][2]*4 ,0);
     ellipse(zombies[i][0],zombies[i][1],25,25);
     zombies[i][0]+=cos(zombieAngle);
     zombies[i][1]+=sin(zombieAngle);
-    
+    //if(zombie gets too close) playerHealth--;
   }
 
   if (playerHealth<=0) {
