@@ -71,7 +71,7 @@ void bullet(float x, float y, int mouseX, int mouseY, ArrayList<float[]>zombies)
   for (int i=0; i<zombies.size(); i++) {//run through each zombie and test if hit etc
     xyh=zombies.get(i);//put array list at i in the array
     if(hit(xyh[0],xyh[1],x,y,x2,y2)){//text if the zombie was hit by the bullet
-      xyh[2]-=50;//zombie takes damage
+      xyh[2]-=49;//zombie takes damage
       if(xyh[2]<=0){
         zombies.remove(i);
         points++;
@@ -103,8 +103,7 @@ void keyReleased() {//if a key is released then set its bool to false
   if (key=='d') keys[3]=false;
 }
  
-float playerX=width/2;
-float playerY=height/2;//put player x and y in middle of screen
+
 boolean[] keys=new boolean[4];//used to hold key inputs
 int playerHealth=100;//start health of player
 int playerSpeed=2;//player speed multiplier
@@ -117,22 +116,28 @@ float[] xyh=new float[3];//used to take and add arrays to zombie arraylist
 float zombieAngle;//used to make zombie walk toward player
 float gunAngle;
 
-
+//PImage img;
 void setup() {
   size(400, 400);//screen size, should be scalable with height and width gloabals
   zombie();
   strokeWeight(3);
+  //img = loadImage("back.jpg");
 }
+float playerX=width;
+float playerY=height;//put player x and y in middle of screen
 
 void draw() {
   background(255);//draw a white back
-
+  //image(img,0,0,width/2,height/2);
+  //image(img,width/2,0,width/2,height/2);
+  //image(img,0,height/2,width/2,height/2);
+  //image(img,width/2,height/2,width/2,height/2);
   if (keys[0]) playerY-=playerSpeed;
   if (keys[1]) playerX-=playerSpeed;
   if (keys[2]) playerY+=playerSpeed;
   if (keys[3]) playerX+=playerSpeed;//make controls take affect
 
-  fill(500-playerHealth*4, 0, playerHealth*4);//player health shown by blue to red
+  fill(500-playerHealth*5, 0, playerHealth*5);//player health shown by blue to red
   ellipse(playerX, playerY, 25, 25);//draw player
   gunAngle=atan2(mouseY-playerY,mouseX-playerX);
   strokeWeight(6);
@@ -140,10 +145,11 @@ void draw() {
   strokeWeight(3);
   fill(0, 0, 255);//lives draw blue
   for (int i=0; i<lives; i++) {
-    ellipse(i*15+15, 25, 10, 10);//draw lives circles
+    ellipse(i*15+15, 40, 10, 10);//draw lives circles
   }
-  text("points: "+points,40,10);
-  text("High Score: "+highScore,40,30);
+  fill(255);
+  text("points: "+points,15,10);
+  text("High Score: "+highScore,15,30);
   
   for (int i=0; i<zombies.size();i++){//run for every zombie
     float[] xyh=zombies.get(i);//acces the array list at i
@@ -174,6 +180,8 @@ void draw() {
     for(int i=zombienum-1; i>0;i--){
       zombies.remove(i);
     }
+    zombies.remove(0);
+    zombie();
     lives=3;
   }
 }
