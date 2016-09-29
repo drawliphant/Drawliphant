@@ -28,7 +28,7 @@ boolean hit(float x, float y, float x1, float y1, float x2, float y2) {
   return ret;
 }
 void zombie(){//auto places a zombie with 100 health at a random wall at a random point on that wall
-  float[] xyh=new float[3];{
+  float[] xyh=new float[4];{
     xyh[2]=100;
   }
   boolean one=random(1)<.5;
@@ -52,7 +52,7 @@ void zombie(){//auto places a zombie with 100 health at a random wall at a rando
   zombies.add(xyh);
 }
 void zombie(float x, float y, int health){//un used overload to manually place zombie at an x and y with health
-  float[] xyh=new float[3];
+  float[] xyh=new float[4];
   xyh[0]=x;
   xyh[1]=y;
   xyh[2]=health;
@@ -72,13 +72,14 @@ void bullet(float x, float y, int mouseX, int mouseY, ArrayList<float[]>zombies)
     xyh=zombies.get(i);//put array list at i in the array
     if(hit(xyh[0],xyh[1],x,y,x2,y2)){//text if the zombie was hit by the bullet
       xyh[2]-=49;//zombie takes damage
+      xyh[3]=-3;//zombie get knocked back
       if(xyh[2]<=0){
         zombies.remove(i);
         points++;
         zombie();
-        if(points%5==0){
-          zombie();
-        }
+        //if(points%5==0){
+        //  zombie();
+        //}
       }//if zombie is out of health it dies
     }
   }
@@ -110,8 +111,9 @@ int playerSpeed=2;//player speed multiplier
 int lives=3;//player lives
 int points=0;
 int highScore=0;
+int frames=0;
 ArrayList<float[]> zombies=new ArrayList<float[]>();//holds the zombies, array holds x,y,health
-float[] xyh=new float[3];//used to take and add arrays to zombie arraylist
+float[] xyh=new float[4];//used to take and add arrays to zombie arraylist
 
 float zombieAngle;//used to make zombie walk toward player
 float gunAngle;
@@ -136,6 +138,11 @@ void draw() {
   if (keys[1]) playerX-=playerSpeed;
   if (keys[2]) playerY+=playerSpeed;
   if (keys[3]) playerX+=playerSpeed;//make controls take affect
+  
+  frames++;
+  if(frames%300==0){
+    zombie();
+  }
 
   fill(500-playerHealth*5, 0, playerHealth*5);//player health shown by blue to red
   ellipse(playerX, playerY, 25, 25);//draw player
@@ -156,9 +163,9 @@ void draw() {
     zombieAngle=atan2(playerY-xyh[1],playerX-xyh[0]);//find the angle between guy and zombie
     fill(500-xyh[2]*4,xyh[2]*4 ,0);//color zombie by health, green full, red dead
     ellipse(xyh[0],xyh[1],25,25);//draw zombie
-    xyh[0]+=cos(zombieAngle);
-    xyh[1]+=sin(zombieAngle);//move toward player by angle
-    
+    xyh[0]+=cos(zombieAngle)*xyh[3];
+    xyh[1]+=sin(zombieAngle)*xyh[3];//move toward player by angle
+    if(xyh[3]<1)xyh[3]+=.2;
     if(dist(xyh[0],xyh[1],playerX,playerY)<25)playerHealth--;//if you get to close the any zombie loose health
   }
 
