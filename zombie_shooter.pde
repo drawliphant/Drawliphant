@@ -1,5 +1,6 @@
 boolean hit(float x, float y, float x1, float y1, float x2, float y2) {
 //tests if the bullet line intersects with zombie
+//its all witchcraft
   float A = x - x1;
   float B = y - y1;
   float C = x2 - x1;
@@ -13,49 +14,51 @@ boolean hit(float x, float y, float x1, float y1, float x2, float y2) {
 
   float xx, yy;
 
-  if (param < 0) {
+  if (param < 0) {//if the zombie is begind player measure from player
     xx = x1;
     yy = y1;
-  } else if (param > 1) {
+  } else if (param > 1) {//if zombie is past bullet distance then measure from where it lands
     xx = x2;
     yy = y2;
-  } else {
+  } else {//otherwise measure distance from closest point on line
     xx = x1 + param * C;
     yy = y1 + param * D;
   }
 
-  ret=dist(x, y, xx, yy)<13;
-  return ret;
+  ret=dist(x, y, xx, yy)<13;//test if line is close enough to zombie to hit
+  return ret;//returns boolean if it hit the zombie
 }
 void zombie(){//auto places a zombie with 100 health at a random wall at a random point on that wall
-  float[] xyh=new float[4];{
-    xyh[2]=100;
+  float[] xyh=new float[4];{//used to get x,y,health,speed of zombies
+    xyh[2]=100;//health at 100%
+    xyh[3]=0;
   }
-  boolean one=random(1)<.5;
-  boolean two=random(1)<.5;
-  if(one&&two){
+  boolean one=random(1)<.5;//gets random bool
+  boolean two=random(1)<.5;//random bool 2
+  if(one&&two){//25% chance of spawning at top
     xyh[0]=random(0,400);
     xyh[1]=-20;
   }
-  if(!one&&two){
+  if(!one&&two){//spawn at bottom
     xyh[0]=random(0,width);
     xyh[1]=height+20;
   }
-  if(!one&&!two){
+  if(!one&&!two){//spawn at right
     xyh[0]=width+20;
     xyh[1]=random(0,height);
   }
-  if(one&&!two){
+  if(one&&!two){//spawn at left
     xyh[0]=-20;
     xyh[1]=random(0,height);
   }
-  zombies.add(xyh);
+  zombies.add(xyh);//put the new zombie values into arrayList
 }
 void zombie(float x, float y, int health){//un used overload to manually place zombie at an x and y with health
   float[] xyh=new float[4];
   xyh[0]=x;
   xyh[1]=y;
   xyh[2]=health;
+  xyh[3]=0;
   zombies.add(xyh);
 }
 
@@ -89,9 +92,7 @@ void bullet(float x, float y, int mouseX, int mouseY, ArrayList<float[]>zombies)
         if (points>highScore){
           highScore=points;
         }  
-        //if(points%5==0){
-        //  zombie();
-        //}
+        
       }//if zombie is out of health it dies
     }
   }
@@ -193,16 +194,16 @@ void draw() {
     background(255, 0, 0);
   }
   if(lives<0) {//game over code
-    delay(1000);
+    delay(1000);//wait a second to make you realize you is kill and you loose
     
-    points=0;
+    points=0;//reset points, frames and lives
     frames=0;
-    int zombienum=zombies.size();
-    for(int i=zombienum-1; i>0;i--){
+    lives=3;
+    int zombienum=zombies.size();//get the length of the zombie arraylist
+    for(int i=zombienum-1; i>0;i--){//remove all zombies
       zombies.remove(i);
     }
     zombies.remove(0);
-    zombie();
-    lives=3;
+    zombie();//spawn a new zombie to start the game again
   }
 }
