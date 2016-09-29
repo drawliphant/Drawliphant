@@ -35,18 +35,18 @@ void zombie(){//auto places a zombie with 100 health at a random wall at a rando
   boolean two=random(1)<.5;
   if(one&&two){
     xyh[0]=random(0,400);
-    xyh[1]=0;
+    xyh[1]=-20;
   }
   if(!one&&two){
     xyh[0]=random(0,width);
-    xyh[1]=height;
+    xyh[1]=height+20;
   }
   if(!one&&!two){
-    xyh[0]=width;
+    xyh[0]=width+20;
     xyh[1]=random(0,height);
   }
   if(one&&!two){
-    xyh[0]=0;
+    xyh[0]=-20;
     xyh[1]=random(0,height);
   }
   zombies.add(xyh);
@@ -64,10 +64,19 @@ void bullet(float x, float y, int mouseX, int mouseY, ArrayList<float[]>zombies)
   float range=dist(0, 0, width, height);//shoot just far enough to go from corner to opostie corner
   float x2=x+range*cos(angle);//end point of bullet, where it lands
   float y2=y+range*sin(angle);
-  
+  float gunEndX=x+cos(angle)*30;//playerX+cos(gunAngle)*30,playerY+sin(gunAngle)*30
+  float gunEndY=y+sin(angle)*30;
   line(x+cos(angle)*30, y+sin(angle)*30, x2, y2);//draw the bullet
-
-
+  strokeWeight(6);
+  stroke(255,255,0);
+  float rangle=random(-PI/8,PI/8);
+  line(gunEndX,gunEndY,gunEndX+cos(angle+rangle)*20,gunEndY+sin(angle+rangle)*20);
+  rangle=random(-PI/8,PI/8);
+  line(gunEndX,gunEndY,gunEndX+cos(angle+rangle)*20,gunEndY+sin(angle+rangle)*20);
+  rangle=random(-PI/8,PI/8);
+  line(gunEndX,gunEndY,gunEndX+cos(angle+rangle)*20,gunEndY+sin(angle+rangle)*20);
+  strokeWeight(3);
+  stroke(0);
   for (int i=0; i<zombies.size(); i++) {//run through each zombie and test if hit etc
     xyh=zombies.get(i);//put array list at i in the array
     if(hit(xyh[0],xyh[1],x,y,x2,y2)){//text if the zombie was hit by the bullet
@@ -77,6 +86,9 @@ void bullet(float x, float y, int mouseX, int mouseY, ArrayList<float[]>zombies)
         zombies.remove(i);
         points++;
         zombie();
+        if (points>highScore){
+          highScore=points;
+        }  
         //if(points%5==0){
         //  zombie();
         //}
@@ -115,7 +127,7 @@ int frames=0;
 ArrayList<float[]> zombies=new ArrayList<float[]>();//holds the zombies, array holds x,y,health
 float[] xyh=new float[4];//used to take and add arrays to zombie arraylist
 
-float zombieAngle;//used to make zombie walk toward player
+float zA;//used to make zombie walk toward player
 float gunAngle;
 
 //PImage img;
@@ -125,8 +137,8 @@ void setup() {
   strokeWeight(3);
   //img = loadImage("back.jpg");
 }
-float playerX=width;
-float playerY=height;//put player x and y in middle of screen
+float playerX=200;
+float playerY=200;//put player x and y in middle of screen
 
 void draw() {
   background(255);//draw a white back
@@ -140,7 +152,7 @@ void draw() {
   if (keys[3]) playerX+=playerSpeed;//make controls take affect
   
   frames++;
-  if(frames%300==0){
+  if(frames%200==0){
     zombie();
   }
 
@@ -154,17 +166,21 @@ void draw() {
   for (int i=0; i<lives; i++) {
     ellipse(i*15+15, 40, 10, 10);//draw lives circles
   }
-  fill(255);
-  text("points: "+points,15,10);
-  text("High Score: "+highScore,15,30);
+  fill(0);
+  text("points: "+points,8,15);
+  text("High Score: "+highScore,7,30);
   
   for (int i=0; i<zombies.size();i++){//run for every zombie
     float[] xyh=zombies.get(i);//acces the array list at i
-    zombieAngle=atan2(playerY-xyh[1],playerX-xyh[0]);//find the angle between guy and zombie
+    zA=atan2(playerY-xyh[1],playerX-xyh[0]);//find the angle between guy and zombie
     fill(500-xyh[2]*4,xyh[2]*4 ,0);//color zombie by health, green full, red dead
     ellipse(xyh[0],xyh[1],25,25);//draw zombie
-    xyh[0]+=cos(zombieAngle)*xyh[3];
-    xyh[1]+=sin(zombieAngle)*xyh[3];//move toward player by angle
+    //draw zombie arms
+    line(xyh[0]+cos(zA+PI/4)*13,xyh[1]+sin(zA+PI/4)*13,xyh[0]+cos(zA+PI/8)*25,xyh[1]+sin(zA+PI/8)*25);
+    line(xyh[0]+cos(zA-PI/4)*13,xyh[1]+sin(zA-PI/4)*13,xyh[0]+cos(zA-PI/8)*25,xyh[1]+sin(zA-PI/8)*25);
+    
+    xyh[0]+=cos(zA)*xyh[3];
+    xyh[1]+=sin(zA)*xyh[3];//move toward player by angle
     if(xyh[3]<1)xyh[3]+=.2;
     if(dist(xyh[0],xyh[1],playerX,playerY)<25)playerHealth--;//if you get to close the any zombie loose health
   }
@@ -177,12 +193,10 @@ void draw() {
     background(255, 0, 0);
   }
   if(lives<0) {//game over code
-    text("GAME OVER", 200, 200);
     delay(1000);
-    if (points>highScore){
-      highScore=points;
-    }
+    
     points=0;
+    frames=0;
     int zombienum=zombies.size();
     for(int i=zombienum-1; i>0;i--){
       zombies.remove(i);
