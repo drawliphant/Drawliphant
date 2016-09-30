@@ -52,6 +52,39 @@ void zombie(){//auto places a zombie with 100 health at a random wall at a rando
     xyh[1]=random(0,height);
   }
   zombies.add(xyh);//put the new zombie values into arrayList
+} 
+void mine(float x,float y,ArrayList<float[]>mines){
+  float[] xyt=new float[3];
+  xyt[0]=x;
+  xyt[1]=y;
+  xyt[2]=108;
+  mines.add(xyt);
+}
+void boom(float x,float y,ArrayList<float[]>zombies){
+  fill(255,255,0);
+  ellipse(x,y,100,100);
+  float[] xyh=new float[4];
+  int zombieSize=zombies.size();
+  float damage;
+  for(int i=0;i<zombieSize;i++){
+    xyh=zombies.get(i);
+    damage=200-dist(x,y,xyh[0],xyh[1]);
+    
+    xyh[2]-=damage;
+    if(xyh[2]<0)xyt[2]=0;
+    zombies.set(i,xyh);
+    if(xyh[2]<=0){
+        zombies.remove(i);
+        points++;
+        zombie();
+        if (points>highScore){
+          highScore=points;
+        }  
+        
+    }//if zombie is out of health it dies
+    
+  }
+  
 }
 void zombie(float x, float y, int health){//un used overload to manually place zombie at an x and y with health
   float[] xyh=new float[4];
@@ -107,7 +140,7 @@ void keyPressed() {//sets bool to true if the key is pressed
   if (key=='s') keys[2]=true;
   if (key=='d') keys[3]=true;
   if(key==' '){//spawn a zombie at a random wall when you press space
-    zombie();
+    mine(playerX,playerY,mines);
   }
 }
 void keyReleased() {//if a key is released then set its bool to false
@@ -125,6 +158,9 @@ int lives=3;//player lives
 int points=0;
 int highScore=0;
 int frames=0;
+int playerMines=3;
+float[] xyt=new float[3];
+ArrayList<float[]> mines=new ArrayList<float[]>();//mines in world
 ArrayList<float[]> zombies=new ArrayList<float[]>();//holds the zombies, array holds x,y,health
 float[] xyh=new float[4];//used to take and add arrays to zombie arraylist
 
@@ -184,6 +220,20 @@ void draw() {
     xyh[1]+=sin(zA)*xyh[3];//move toward player by angle
     if(xyh[3]<1)xyh[3]+=.2;
     if(dist(xyh[0],xyh[1],playerX,playerY)<25)playerHealth--;//if you get to close the any zombie loose health
+  }
+  for(int i=0;i<mines.size();i++){
+    xyt=mines.get(i);
+    fill(0);
+    ellipse(xyt[0],xyt[1],20,20);
+    if(xyt[2]%18<9){
+      fill(255,0,0);
+      ellipse(xyt[0],xyt[1],5,5);
+    }
+    xyt[2]--;
+    if(xyt[2]<0){
+      boom(xyt[0],xyt[1],zombies);
+      mines.remove(i);
+    }
   }
 
   if (playerHealth<=0) {//death code
