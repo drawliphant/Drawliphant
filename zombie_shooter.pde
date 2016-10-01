@@ -136,6 +136,18 @@ void bullet(float x, float y, int mouseX, int mouseY, ArrayList<float[]>zombies)
     }
   }
 };
+void drawLegs (float x, float y, float angle ,float seed){
+   float 1x=cos(angle+PI/2)*10;
+   float 1y=sin(angle+PI/2)*10;
+   float 2x=cos(angle-PI/2)*10;
+   float 2y=sin(angle-PI/2)*10;
+   float 3x=1x+cos (angle)*sin (frameCount+seed);
+   float 3y=1y+sin(angle)*sin (frameCount+seed);
+   float 4x=2x+cos (angle)*sin (-frameCount-seed);
+   float 4y=2y+sin(angle)*sin (-frameCount-seed);
+   line(x1,y1,x3,y3);
+   line(x2,y2,x4,y4);
+}
 
 //void mousePressed() {
 //  bullet(playerX, playerY, mouseX, mouseY, zombies);//shoot and test if it hits etc
@@ -239,7 +251,7 @@ void draw() {
     //draw zombie arms
     line(xyh[0]+cos(zA+PI/4)*13,xyh[1]+sin(zA+PI/4)*13,xyh[0]+cos(zA+PI/8)*25,xyh[1]+sin(zA+PI/8)*25);
     line(xyh[0]+cos(zA-PI/4)*13,xyh[1]+sin(zA-PI/4)*13,xyh[0]+cos(zA-PI/8)*25,xyh[1]+sin(zA-PI/8)*25);
-    
+    drawLegs(xyh[0],xyh[1],zA,xyh[0]/10);
     xyh[0]+=cos(zA)*xyh[3];
     xyh[1]+=sin(zA)*xyh[3];//move toward player by angle
     if(xyh[3]<1)xyh[3]+=.2;
@@ -269,7 +281,6 @@ void draw() {
   }
   if(lives<0) {//game over code
     delay(1000);//wait a second to make you realize you is kill and you loose
-    
     points=0;//reset points, frames and lives
     frames=0;
     lives=3;
