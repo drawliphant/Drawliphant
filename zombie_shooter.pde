@@ -136,15 +136,15 @@ void bullet(float x, float y, int mouseX, int mouseY, ArrayList<float[]>zombies)
     }
   }
 };
-void drawLegs (float x, float y, float angle ,float seed){
-   float 1x=cos(angle+PI/2)*10;
-   float 1y=sin(angle+PI/2)*10;
-   float 2x=cos(angle-PI/2)*10;
-   float 2y=sin(angle-PI/2)*10;
-   float 3x=1x+cos (angle)*sin (frameCount+seed);
-   float 3y=1y+sin(angle)*sin (frameCount+seed);
-   float 4x=2x+cos (angle)*sin (-frameCount-seed);
-   float 4y=2y+sin(angle)*sin (-frameCount-seed);
+void drawLegs (float x, float y, float angle ,float frame){
+   float x1=cos(angle+PI/2)*7+x;
+   float y1=sin(angle+PI/2)*7+y;
+   float x2=cos(angle-PI/2)*7+x;
+   float y2=sin(angle-PI/2)*7+y;
+   float x3=x1+cos (angle)*sin (frame/10)*15;
+   float y3=y1+sin(angle)*sin (frame/10)*15;
+   float x4=x2+cos (angle)*sin (-frame/10)*15;
+   float y4=y2+sin(angle)*sin (-frame/10)*15;
    line(x1,y1,x3,y3);
    line(x2,y2,x4,y4);
 }
@@ -247,11 +247,13 @@ void draw() {
     float[] xyh=zombies.get(i);//acces the array list at i
     zA=atan2(playerY-xyh[1],playerX-xyh[0]);//find the angle between guy and zombie
     fill(500-xyh[2]*4,xyh[2]*4 ,0);//color zombie by health, green full, red dead
+    drawLegs(xyh[0],xyh[1],zA,frames);
     ellipse(xyh[0],xyh[1],25,25);//draw zombie
+    
     //draw zombie arms
     line(xyh[0]+cos(zA+PI/4)*13,xyh[1]+sin(zA+PI/4)*13,xyh[0]+cos(zA+PI/8)*25,xyh[1]+sin(zA+PI/8)*25);
     line(xyh[0]+cos(zA-PI/4)*13,xyh[1]+sin(zA-PI/4)*13,xyh[0]+cos(zA-PI/8)*25,xyh[1]+sin(zA-PI/8)*25);
-    drawLegs(xyh[0],xyh[1],zA,xyh[0]/10);
+    
     xyh[0]+=cos(zA)*xyh[3];
     xyh[1]+=sin(zA)*xyh[3];//move toward player by angle
     if(xyh[3]<1)xyh[3]+=.2;
