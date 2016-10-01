@@ -66,11 +66,17 @@ void boom(float x,float y,ArrayList<float[]>zombies){
   float[] xyh=new float[4];
   int zombieSize=zombies.size();
   float damage;
+  float angle;
   for(int i=0;i<zombieSize;i++){
     xyh=zombies.get(i);
     damage=200-dist(x,y,xyh[0],xyh[1]);
+    if(damage>100)damage=100;
+    angle=atan2(xyh[1]-y,xyh[0]-x);
     
+    xyh[0]+=cos(angle)*damage/10;
+    xyh[1]+=sin(angle)*damage/10;
     xyh[2]-=damage;
+    //xyh[3]-=damage/20;
     if(xyh[2]<0)xyt[2]=0;
     zombies.set(i,xyh);
     if(xyh[2]<=0){
@@ -131,16 +137,17 @@ void bullet(float x, float y, int mouseX, int mouseY, ArrayList<float[]>zombies)
   }
 };
 
-void mousePressed() {
-  bullet(playerX, playerY, mouseX, mouseY, zombies);//shoot and test if it hits etc
-}
+//void mousePressed() {
+//  bullet(playerX, playerY, mouseX, mouseY, zombies);//shoot and test if it hits etc
+//}
 void keyPressed() {//sets bool to true if the key is pressed
   if (key=='w') keys[0]=true;
   if (key=='a') keys[1]=true;
   if (key=='s') keys[2]=true;
   if (key=='d') keys[3]=true;
-  if(key==' '){//spawn a zombie at a random wall when you press space
+  if(key==' '&&playerMines>0){//spawn a zombie at a random wall when you press space
     mine(playerX,playerY,mines);
+    playerMines--;
   }
 }
 void keyReleased() {//if a key is released then set its bool to false
@@ -158,7 +165,9 @@ int lives=3;//player lives
 int points=0;
 int highScore=0;
 int frames=0;
-int playerMines=3;
+int fireRate=15;
+int fireRateTimer=0;
+int playerMines=5;
 float[] xyt=new float[3];
 ArrayList<float[]> mines=new ArrayList<float[]>();//mines in world
 ArrayList<float[]> zombies=new ArrayList<float[]>();//holds the zombies, array holds x,y,health
@@ -187,7 +196,14 @@ void draw() {
   if (keys[1]) playerX-=playerSpeed;
   if (keys[2]) playerY+=playerSpeed;
   if (keys[3]) playerX+=playerSpeed;//make controls take affect
-  
+  if (mousePressed){
+    
+    if(fireRateTimer<=0){
+      bullet(playerX, playerY, mouseX, mouseY, zombies);//shoot and test if it hits etc
+      fireRateTimer=fireRate;
+    }
+  }
+  fireRateTimer--;
   frames++;
   if(frames%200==0){
     zombie();
@@ -203,6 +219,14 @@ void draw() {
   for (int i=0; i<lives; i++) {
     ellipse(i*15+15, 40, 10, 10);//draw lives circles
   }
+  fill(0);
+  for (int i=0; i<playerMines; i++) {
+    stroke(0);
+    ellipse(i*15+15, 55, 10, 10);//draw mines circles
+    stroke(255,0,0);
+    point(i*15+15,55);
+  }
+  stroke(0);
   fill(0);
   text("points: "+points,8,15);
   text("High Score: "+highScore,7,30);
@@ -249,6 +273,12 @@ void draw() {
     points=0;//reset points, frames and lives
     frames=0;
     lives=3;
+    playerMines=5;
+    int minenum=mines.size();//get the length of the zombie arraylist
+    for(int i=minenum-1; i>0;i--){//remove all zombies
+      mines.remove(i);
+    }
+    
     int zombienum=zombies.size();//get the length of the zombie arraylist
     for(int i=zombienum-1; i>0;i--){//remove all zombies
       zombies.remove(i);
