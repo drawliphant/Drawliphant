@@ -24,19 +24,23 @@ Bug[] chamelion=new Bug[bugCount];{
 
   }
 }
-float[][] dis=new float [bugCount][bugCount];
-  for(int j=0; j<chamelion.length;j++){
+float[][] dis=new float [bugCount][bugCount];{
+  for(int i=0; i<chamelion.length;i++){
     for(int j=0; j<chamelion.length;j++){
       dis[i][j]=dist(chamelion[i].x,chamelion[i].y,chamelion[j].x,chamelion[j].y);
     }
   }
+}
+color[] bugColor=new color[3];{
   bugColor[0]=#ff0000;
   bugColor[1]=#00ff00;
   bugColor[2]=#0000ff;
 }
 int[] count={0,0,0};
-int closest1;//run
-int closest2;//eat
+int closest1=0;//run
+int closest2=0;//eat
+float angle1;
+float angle2;
 float mapSize=dist(0,0,width,height);
 void draw(){
   fill(255);
@@ -45,26 +49,36 @@ void draw(){
   count[1]=0;
   count[2]=0;
   for(int i=0; i<chamelion.length;i++){
-    shortest1=shortest2=mapSize;
+    count[chamelion[i].col]++;
+    closest1=closest2=0;
     for(int j=0; j<chamelion.length;j++){
-      dis[i][j]=dist(chamelion[i].x,chamelion[i].y,chamelion[j].x,chamelion[j].y
-      if(chamelion[i].col==0){
-        if (chamelion[i].col==1&&dis[i][j]<dis[i][closest1])closest1=j;
-        else if (chamelion[i].col==2&&dis[i][j]<dis[i][closest2])closest2=j;
-      }else if(chamelion[i].col==1){
-        
-        
-      }else{
-        
-        
+      if(i!=j){
+        dis[i][j]=dist(chamelion[i].x,chamelion[i].y,chamelion[j].x,chamelion[j].y);
+        if(chamelion[i].col==0){
+          if (chamelion[j].col==1&&dis[i][j]<dis[i][closest1])closest1=j;
+          else if (chamelion[j].col==2&&dis[i][j]<dis[i][closest2])closest2=j;
+        }else if(chamelion[i].col==1){
+          if (chamelion[j].col==2&&dis[i][j]<dis[i][closest1])closest1=j;
+          else if (chamelion[j].col==0&&dis[i][j]<dis[i][closest2])closest2=j;
+        }else{
+          if (chamelion[j].col==0&&dis[i][j]<dis[i][closest1])closest1=j;
+          else if (chamelion[j].col==1&&dis[i][j]<dis[i][closest2])closest2=j;
+          
+        }
       }
-      
     }
-    chamelion[i].angle=((atan2(chamelion[closest1].y-chamelion[i].y,chamelion[closest1].x-chamelion[i].x)+PI)+atan2(chamelion[closest2].y-chamelion[i].y,chamelion[closest2].x-chamelion[i].x))%(2*PI)/2;
-    if(chamelion[i].x>width-10)chamelion[i].angle=PI;
-    if(chamelion[i].x<10)chamelion[i].angle=0;
-    if(chamelion[i].y<10)chamelion[i].angle=PI/2;
-    if(chamelion[i].y>height-10-bugCount)chamelion[i].angle=3*PI/2 ;
+    angle1=atan2(chamelion[closest1].y-chamelion[i].y,chamelion[closest1].x-chamelion[i].x)+PI;
+    angle1%=2*PI;
+    angle2=atan2(chamelion[closest2].y-chamelion[i].y,chamelion[closest2].x-chamelion[i].x);
+    if(count[chamelion[closest1].col]==0)angle1=angle2;
+    else if(count[chamelion[closest2].col]==0)angle2=angle1;
+    point(chamelion[i].x+cos(angle1)*25,chamelion[i].y+sin(angle1)*25);
+    point(chamelion[i].x+cos(angle2)*25,chamelion[i].y+sin(angle2)*25);
+    chamelion[i].angle=(angle1+angle2)%(2*PI)/2;
+    if(chamelion[i].x>width-10)chamelion[i].x-=5;
+    if(chamelion[i].x<10)chamelion[i].x+=5;
+    if(chamelion[i].y<10)chamelion[i].y+=5;
+    if(chamelion[i].y>height-10-bugCount)chamelion[i].y-=5 ;
     chamelion[i].x+=cos(chamelion[i].angle);
     chamelion[i].y+=sin(chamelion[i].angle);
   }
@@ -86,7 +100,7 @@ void draw(){
         }
       }  
     }
-    count[chamelion[i].col]++;
+    
     fill(bugColor[chamelion[i].col]);
 
     ellipse(chamelion[i].x,chamelion[i].y,20,20);
