@@ -1,29 +1,47 @@
 void setup(){
-  size(800,500);
+  size(1000,1000);
 }
-  int max=100;
+  int max=1000;
   int iteration;
   double c_re;
   double c_im;
   double x;
   double y;
   double x_new;
-  float zoom=4;
-  float xshift=2;
-  float yshift=2;
+  float x1=-1.5;
+  float y1=-2;
+  float x2=1.5;
+  float y2=1;
+  float x3;
+  float y3;
 void mousePressed(){
-  zoom/=2;
-  xshift/=2-zoom*mouseX/width;
-  yshift/=2-zoom*mouseY/height;
+  x3=x1+(x2-x1)*mouseX/width;
+  y3=y1+(y2-y1)*mouseY/height;
+  //redraw();
+}
+void mouseReleased(){
+  x2=x1+(x2-x1)*mouseX/width;
+  y2=y1+(y2-y1)*mouseY/height;
+  y1=y3;
+  x1=x3;
+  y2=y1+(x2-x1);
+  
   redraw();
 }
 void draw(){
   background(0);
-  colorMode(HSB,100);
-  for (int row = 0; row < height; row++) {
-    for (int col = 0; col < width; col++) {
-        c_re= (col - width/xshift)*zoom/width;
-        c_im = (row - height/yshift)*zoom/width;
+  colorMode(HSB,200);
+  float w=(x2-x1)/width;
+  float h=(y2-y1)/height;
+  int why=0;
+  
+  for (float row = y1; row < y2; row+=h) {
+    why++;
+    int ex=0;
+    for (float col = x1; col < x2; col+=w) {
+      ex++;
+        c_re=row;
+        c_im =col;
         x = 0;
         y = 0;
         iteration = 0;
@@ -34,12 +52,13 @@ void draw(){
             iteration++;
         }
         if (iteration < max){
-          stroke(iteration*10%100,50,50);
-          point(col, row);
+          stroke(iteration%200,200,200);
+          //print(iteration);
+          point(ex, why);
         }
         else{
           stroke(0,0,0);
-          point(col, row);
+          point(ex, why);
         }
     }
 }
